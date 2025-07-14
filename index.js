@@ -1,5 +1,4 @@
 const TelegramBot = require('node-telegram-bot-api');
-
 const token = '7292394758:AAGSbXGUAbg2JTBt4fuGnYRcIUULNu2m6a0';
 
 const bot = new TelegramBot(token, { polling: true });
@@ -7,9 +6,12 @@ const bot = new TelegramBot(token, { polling: true });
 bot.setMyCommands([
   { command: '/start', description: "Bot haqida ma'lumot" },
   { command: '/info', description: "O'zingiz haqingizda ma'lumot" },
+  { command: '/portfolio', description: "Muhammadziyo portfoliosi" },
+  { command: '/inline_portfolio', description: "Muhammadziyo portfoliosi" },
   { command: '/username', description: "Usernameingiz" },
-  { command: '/botavatar', description: "Botimizning avatar rasmi" },
-  { command: '/dinogame', description: "chromedagi dino game🦖" },
+  { command: '/botavatar', description: "Bot avatarini ko'rish" },
+  { command: '/sticker', description: "Sticker yuborish" },
+  { command: '/dinogame', description: "Dino game havolasi" },
 ]);
 
 bot.on('message', (msg) => {
@@ -17,7 +19,7 @@ bot.on('message', (msg) => {
   const text = msg.text;
 
   if (text === '/start') {
-    const starts = {
+    return bot.sendMessage(chatId, `Assalomu alaykum hurmatli ${msg.from?.first_name}!`, {
       reply_markup: {
         inline_keyboard: [
           [
@@ -26,24 +28,26 @@ bot.on('message', (msg) => {
           ],
           [
             { text: "Botavatar", callback_data: '/botavatar' },
-            { text: "Sticker", callback_data: '/sticker'},
+            { text: "Sticker", callback_data: '/sticker' },
           ],
           [
-            { text: "Dino game🦖", callback_data: '/dinogame'},
+            { text: "Portfolio", callback_data: '/portfolio' },
+            { text: "Inline Portfolio", callback_data: '/inline_portfolio' },
+          ],
+          [
+            { text: "Dino game🦖", callback_data: '/dinogame' },
           ]
         ]
       }
-    };
-
-    return bot.sendMessage(chatId, `Assalomu alaykum hurmatli ${msg.from?.first_name}!`, starts);
+    });
   }
 
   if (text === '/info') {
-    return bot.sendMessage(chatId, `Ismingiz: ${msg.from?.first_name}, Familya: ${msg.from?.last_name}, Chat ID: ${chatId}`);
+    return bot.sendMessage(chatId, `Ismingiz: ${msg.from?.first_name}, Familya: ${msg.from?.last_name || "yo'q"}, Chat ID: ${chatId}`);
   }
 
   if (text === '/username') {
-    return bot.sendMessage(chatId, `Sizning username: @${msg.from?.username}`);
+    return bot.sendMessage(chatId, `Sizning username: @${msg.from?.username || "yo'q"}`);
   }
 
   if (text === '/botavatar') {
@@ -66,7 +70,38 @@ bot.on('message', (msg) => {
     });
   }
 
-  return bot.sendMessage(chatId, "Uzur, bu buyruqni tushunmadim :(");
+  if (text === '/portfolio') {
+    return bot.sendMessage(chatId, "Muhammadziyo portfoliosini ko'rish:", {
+      reply_markup: {
+        keyboard: [
+          [
+            {
+              text: "Portfolioni ko'rish",
+              web_app: { url: "https://muhammadziyo011.netlify.app/" }
+            }
+          ]
+        ],
+      }
+    });
+  }
+
+  if (text === '/inline_portfolio') {
+    return bot.sendMessage(chatId, "Portfolioni ko'rish uchun tugmani bosing:", {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "Muhammadziyo portfoliosi",
+              web_app: { url: "https://muhammadziyo011.netlify.app/" }
+            }
+          ]
+        ]
+      }
+    });
+  }
+
+  // Agar hech narsa mos kelmasa:
+  bot.sendMessage(chatId, "Uzur, men bu komandani tushunmadim!");
 });
 
 bot.on('callback_query', (query) => {
@@ -74,11 +109,11 @@ bot.on('callback_query', (query) => {
   const data = query.data;
 
   if (data === '/info') {
-    return bot.sendMessage(chatId, `Ismingiz: ${query.from?.first_name}, Familya: ${query.from?.last_name}, Chat ID: ${chatId}`);
+    return bot.sendMessage(chatId, `Ismingiz: ${query.from?.first_name || ''}, Familya: ${query.from?.last_name || ''}, Chat ID: ${chatId}`);
   }
 
   if (data === '/username') {
-    return bot.sendMessage(chatId, `Sizning username: @${msg.from?.username}`);
+    return bot.sendMessage(chatId, `Sizning username: @${query.from?.username || 'yo\'q'}`);
   }
 
   if (data === '/botavatar') {
@@ -96,6 +131,36 @@ bot.on('callback_query', (query) => {
       reply_markup: {
         inline_keyboard: [
           [{ text: "Dino game🦖", url: 'https://chromedino.com/' }]
+        ]
+      }
+    });
+  }
+
+  if (data === '/portfolio') {
+    return bot.sendMessage(chatId, "Muhammadziyo portfoliosini ko'rish:", {
+      reply_markup: {
+        keyboard: [
+          [
+            {
+              text: "Portfolioni ko'rish",
+              web_app: { url: "https://muhammadziyo011.netlify.app/" }
+            }
+          ]
+        ],
+      }
+    });
+  }
+
+  if (data === '/inline_portfolio') {
+    return bot.sendMessage(chatId, "Portfolioni ko'rish uchun tugmani bosing:", {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "Muhammadziyo portfoliosi",
+              web_app: { url: "https://muhammadziyo011.netlify.app/" }
+            }
+          ]
         ]
       }
     });
